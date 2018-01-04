@@ -17,7 +17,7 @@
         private readonly int ReisPosition = 3;
 
         /// <summary>
-        /// Calls ModifyDeathCount(user, 1) to increase death count by 1
+        /// Calls UpdateDeathCount(user, 1) to increase death count by 1 then displays deathboard
         /// </summary>
         /// <param name="user"></param>
         [Command("kill")]
@@ -35,7 +35,7 @@
         }
 
         /// <summary>
-        /// Calls ModifyDeathCount(user, -1) to decrease death count by 1
+        /// Calls UpdateDeathCount(user, -1) to decrease death count by 1 then displays deathboard
         /// Requires owner for security
         /// </summary>
         /// <param name="user"></param>
