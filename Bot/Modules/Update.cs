@@ -12,52 +12,77 @@
 
     public class Update : ModuleBase<SocketCommandContext>
     {
-        private readonly int AlexsPosition = 1;
-        private readonly int TrevorPosition = 2;
-        private readonly int ReisPosition = 3;
+        readonly int AlexsPosition = 1;
+        readonly int TrevorPosition = 2;
+        readonly int ReisPosition = 3;
+
+        readonly string SquadDeathboardFileName = "SquadDeathboard.txt";
+        readonly string DuoDeathboardFileName = "DuosDeathboard.txt";
 
         /// <summary>
-        /// Calls UpdateDeathCount(user, 1) to increase death count by 1 then displays deathboard
+        /// Calls UpdateDeathCount(user, 1, lobby) to increase death count by 1 in lobby then displays deathboard
+        /// Called by !kill @alexmcintosh [lobby] or !kill @alexmcintosh
         /// </summary>
         /// <param name="user"></param>
         [Command("kill")]
-        public async Task KillAsync(SocketGuildUser user)
+        public async Task KillAsync(SocketGuildUser user, string lobby = "squad")
         {
-            await UpdateDeathCount(user, 1);
-            EmbedBuilder builder = new EmbedBuilder();
 
-            builder.WithTitle("No Chicken For You")
-                .WithDescription($"**{user.Username}** died first this round.")
-                .WithColor(Color.Red);
+            if (lobby == "squad" || lobby == "duos") {
+                
+                await UpdateDeathCount(user, 1, lobby);
 
-            await ReplyAsync("", false, builder.Build());
-            await ShowDeathboardAsync();
+                EmbedBuilder builder = new EmbedBuilder();
+
+                builder.WithTitle("No Chicken For You")
+                       .WithDescription($"**{user.Username.ToUpper()}** died first in " + lobby.ToUpper() + " this round.")
+                    .WithColor(Color.Red);
+                
+                await ReplyAsync("", false, builder.Build());
+                await ShowDeathboardAsync(lobby);
+
+            }
+            else {
+                await ReplyAsync("```Uknown lobby. Use: 'duos', 'squad', or leave blank```");
+            }
         }
 
         /// <summary>
-        /// Calls UpdateDeathCount(user, -1) to decrease death count by 1 then displays deathboard
-        /// Requires owner for security
+        /// Calls UpdateDeathCount(user, -1, lobby) to decrease death count by 1 in lobby then displays deathboard
+        /// Called by !revive @alexmcintosh [lobby]
+        /// Requies owner
         /// </summary>
         /// <param name="user"></param>
         [Command("revive"), RequireOwner]
-        public async Task ReviveAsync(SocketGuildUser user)
+        public async Task ReviveAsync(SocketGuildUser user, string lobby = "squad")
         {
-            await UpdateDeathCount(user, -1);
-            EmbedBuilder builder = new EmbedBuilder();
 
-            builder.WithTitle("Saved!")
-                .WithDescription($"Removed one death from **{user.Username}**")
-                .WithColor(Color.Blue);
+            if (lobby == "squad" || lobby == "duos")
+            {
 
-            await ReplyAsync("", false, builder.Build());
-            await ShowDeathboardAsync();
+                await UpdateDeathCount(user, -1, lobby);
+
+                EmbedBuilder builder = new EmbedBuilder();
+
+                builder.WithTitle("Saved!")
+                       .WithDescription($"**{user.Username.ToUpper()}** had a death removed from " + lobby.ToUpper())
+                       .WithColor(Color.Red);
+
+                await ReplyAsync("", false, builder.Build());
+                await ShowDeathboardAsync(lobby);
+
+            }
+            else
+            {
+                await ReplyAsync("```Uknown lobby. Use: 'duos', 'squad', or leave blank```");
+            }
         }
 
         /// <summary>
         /// Updates the death count for player
         /// </summary>
         /// <param name="user"></param>
-        public Task UpdateDeathCount(SocketGuildUser user, int death)
+        public Task UpdateDeathCount(SocketGuildUser user, int death, string lobby)
         {
             int lineToEdit = 0;
             switch (user.Username)
@@ -65,10 +90,18 @@
                 case ("alexmcintosh"): lineToEdit = AlexsPosition; break;
                 case ("thatguytrevor"): lineToEdit = TrevorPosition; break;
                 case ("reiswarman"): lineToEdit = ReisPosition; break;
-                default: break;
             }
 
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "Deathboard.txt");
+            var path = string.Empty;
+
+            if (lobby == "duos")
+            {
+                path = Path.Combine(Directory.GetCurrentDirectory(), DuoDeathboardFileName);
+            }
+            else
+            {
+                path = Path.Combine(Directory.GetCurrentDirectory(), SquadDeathboardFileName);
+            }
 
             if (lineToEdit != 0)
             {
@@ -76,7 +109,7 @@
                 string[] lines = File.ReadAllLines(path);
 
                 lines[lineToEdit - 1] = (Int32.Parse(lines[lineToEdit - 1]) + death).ToString();
-                File.WriteAllLines("Deathboard.txt", lines, Encoding.UTF8);
+                File.WriteAllLines(path, lines, Encoding.UTF8);
 
             }
 
@@ -84,16 +117,31 @@
         }
 
         /// <summary>
-        /// Displays number of deaths for each person
+        /// Displays number of deaths for each person.
+        /// Defaults to squad if nothing entered. Called with !deathboard duos
         /// </summary>
         [Command("deathboard")]
-        public async Task ShowDeathboardAsync()
+        public async Task ShowDeathboardAsync(string lobby = "squad")
         {
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "Deathboard.txt");
+            var path = string.Empty;
+
+            switch(lobby) {
+                case "duos": 
+                    path = Path.Combine(Directory.GetCurrentDirectory(), DuoDeathboardFileName);
+                    lobby = "Duos"; //For the title in the embed message
+                    break;
+                case "squad":
+                    path = Path.Combine(Directory.GetCurrentDirectory(), SquadDeathboardFileName);
+                    lobby = "Squad"; //For the title in the embed message
+                    break;
+                default: 
+                    await ReplyAsync("```Uknown lobby. Use: 'duos', 'squad', or leave blank```");
+                    return;
+            }
 
             EmbedBuilder builder = new EmbedBuilder();
 
-            builder.WithTitle("Deathboard")
+            builder.WithTitle(lobby + " Deathboard")
                 .AddInlineField("Alex", File.ReadLines(path).Skip(0).Take(1).First()) //Alex is 1st line
                 .AddInlineField("Trevor", File.ReadLines(path).Skip(1).Take(1).First()) //Trevor is 2nd line
                 .AddInlineField("Reis", File.ReadLines(path).Skip(2).Take(1).First())   //Reis is 3rd line

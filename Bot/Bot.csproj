@@ -7,10 +7,14 @@
 
   <ItemGroup>
     <None Remove="Deathboard.txt" />
+    <None Remove="DuosDeathboard.txt" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Deathboard.txt">
+    <EmbeddedResource Include="SquadDeathboard.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DuosDeathboard.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
@@ -19,4 +23,9 @@
     <PackageReference Include="Discord.Net" Version="1.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="DuosDeathboard.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

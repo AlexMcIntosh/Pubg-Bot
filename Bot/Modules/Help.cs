@@ -19,9 +19,9 @@
             EmbedBuilder builder = new EmbedBuilder();
 
             builder.WithTitle("Commands")
-                .AddField("Increase Death Count", "!kill <@username>")
-                .AddField("Decrease Death Count", "!revive <@username>")
-                .AddField("Show Deathboard", "!deathboard");
+                .AddField("Add Death", "!kill <@username> <lobby>")
+                .AddField("Remove Death ", "!revive <@username> <lobby>")
+                .AddField("Show Deathboard", "!deathboard <lobby>");
 
             await ReplyAsync("", false, builder.Build());
 
