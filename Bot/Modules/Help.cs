@@ -13,14 +13,13 @@
         /// Used to show commands available to users
         /// </summary>
         /// <returns></returns>
-        [Command("help")]
+        [Command("ping")]
         public async Task HelpAsync()
         {
-            EmbedBuilder builder = new EmbedBuilder();
+            var builder = new EmbedBuilder();
 
             builder.WithTitle("Commands")
                 .AddField("Add Death", "!kill <@username> <lobby>")
-                .AddField("Remove Death ", "!revive <@username> <lobby>")
                 .AddField("Show Deathboard", "!deathboard <lobby>");
 
             await ReplyAsync("", false, builder.Build());

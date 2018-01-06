@@ -4,7 +4,6 @@
     using Discord.Commands;
     using Discord.WebSocket;
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -16,77 +15,90 @@
         readonly int TrevorPosition = 2;
         readonly int ReisPosition = 3;
 
-        readonly string SquadDeathboardFileName = "SquadDeathboard.txt";
-        readonly string DuoDeathboardFileName = "DuosDeathboard.txt";
+        readonly string SquadsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "SquadsDeathboard.txt");
+        readonly string DuosFilePath = Path.Combine(Directory.GetCurrentDirectory(), "DuosDeathboard.txt");
+
 
         /// <summary>
-        /// Calls UpdateDeathCount(user, 1, lobby) to increase death count by 1 in lobby then displays deathboard
-        /// Called by !kill @alexmcintosh [lobby] or !kill @alexmcintosh
+        /// Increases player death count by 1
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="user">User.</param>
+        /// <param name="lobby">Lobby. Must be duos or squads</param>
         [Command("kill")]
-        public async Task KillAsync(SocketGuildUser user, string lobby = "squad")
-        {
+        public async Task AddDeathAsync(SocketGuildUser user, string lobby = "squads") {
+            var isValidLobby = await ValidateLobbyType(lobby);
 
-            if (lobby == "squad" || lobby == "duos") {
-                
-                await UpdateDeathCount(user, 1, lobby);
+            if (!isValidLobby) { return; }
 
-                EmbedBuilder builder = new EmbedBuilder();
-
-                builder.WithTitle("No Chicken For You")
-                       .WithDescription($"**{user.Username.ToUpper()}** died first in " + lobby.ToUpper() + " this round.")
-                    .WithColor(Color.Red);
-                
-                await ReplyAsync("", false, builder.Build());
-                await ShowDeathboardAsync(lobby);
-
-            }
-            else {
-                await ReplyAsync("```Uknown lobby. Use: 'duos', 'squad', or leave blank```");
-            }
+            var builder = new EmbedBuilder();
+            builder.WithTitle("No Chicken For You")
+                   .WithDescription($"{user.Username.ToUpper()} died first in **" + lobby.ToUpper() + "** this round.")
+                   .WithColor(Color.Red);
+            
+            await ReplyAsync("", false, builder.Build());
+            await UpdateDeathCount(user, 1, lobby);
         }
 
         /// <summary>
-        /// Calls UpdateDeathCount(user, -1, lobby) to decrease death count by 1 in lobby then displays deathboard
-        /// Called by !revive @alexmcintosh [lobby]
-        /// Requies owner
+        /// Removes deaths from player
         /// </summary>
-        /// <param name="user"></param>
-        [Command("revive"), RequireOwner]
-        public async Task ReviveAsync(SocketGuildUser user, string lobby = "squad")
-        {
+        /// <param name="user">User.</param>
+        /// <param name="deathsToRemove">Deaths to remove.</param>
+        /// <param name="lobby">Lobby. Must be duos or squads</param>
+        [Command("remove-death"), RequireOwner]
+        public async Task RemoveDeathAsync(SocketGuildUser user, int deathsToRemove = 1, string lobby = "squads") {
+            var isValidLobby = await ValidateLobbyType(lobby);
 
-            if (lobby == "squad" || lobby == "duos")
-            {
+            if (!isValidLobby) { return; }
 
-                await UpdateDeathCount(user, -1, lobby);
-
-                EmbedBuilder builder = new EmbedBuilder();
-
-                builder.WithTitle("Saved!")
-                       .WithDescription($"**{user.Username.ToUpper()}** had a death removed from " + lobby.ToUpper())
-                       .WithColor(Color.Red);
-
-                await ReplyAsync("", false, builder.Build());
-                await ShowDeathboardAsync(lobby);
-
-            }
-            else
-            {
-                await ReplyAsync("```Uknown lobby. Use: 'duos', 'squad', or leave blank```");
-            }
+            var builder = new EmbedBuilder();
+            builder.WithDescription($"**{user.Username.ToUpper()}** had a death removed from " + lobby.ToUpper())
+                   .WithColor(Color.Blue);
+            
+            await ReplyAsync("", false, builder.Build());
+            await UpdateDeathCount(user, deathsToRemove * -1, lobby);
         }
 
         /// <summary>
-        /// Updates the death count for player
+        /// Displays current death count for players in lobby
         /// </summary>
-        /// <param name="user"></param>
-        public Task UpdateDeathCount(SocketGuildUser user, int death, string lobby)
-        {
-            int lineToEdit = 0;
-            switch (user.Username)
-            {
+        /// <param name="lobby">Lobby type. Must be duos or squads</param>
+        [Command("deathboard")]
+        public async Task ShowDeathboardAsync(string lobby = "squads") {
+            var path = string.Empty;
+
+            switch(lobby) {
+                case "duos":
+                    path = DuosFilePath;
+                    break;
+                case "squads":
+                    path = SquadsFilePath;
+                    break;
+                default: 
+                    await ReplyAsync("```Uknown lobby. Use: 'duos', 'squads', or leave blank```");
+                    return;
+            }
+
+            var builder = new EmbedBuilder();
+            builder.WithTitle(lobby.ToUpper() + " Deathboard")
+                .AddInlineField("Alex", File.ReadLines(path).Skip(0).Take(1).First()) //Alex is 1st line
+                .AddInlineField("Trevor", File.ReadLines(path).Skip(1).Take(1).First()) //Trevor is 2nd line
+                .AddInlineField("Reis", File.ReadLines(path).Skip(2).Take(1).First())   //Reis is 3rd line
+                .WithCurrentTimestamp();
+
+            await ReplyAsync("", false, builder.Build());
+        }
+
+        /// <summary>
+        /// Updates the death count.
+        /// </summary>
+        /// <param name="user">User.</param>
+        /// <param name="death">Death.</param>
+        /// <param name="lobby">Lobby.</param>
+        public async Task UpdateDeathCount(SocketGuildUser user, int death, string lobby) {
+            var lineToEdit = 0;
+
+            switch (user.Username) {
                 case ("alexmcintosh"): lineToEdit = AlexsPosition; break;
                 case ("thatguytrevor"): lineToEdit = TrevorPosition; break;
                 case ("reiswarman"): lineToEdit = ReisPosition; break;
@@ -94,60 +106,83 @@
 
             var path = string.Empty;
 
-            if (lobby == "duos")
-            {
-                path = Path.Combine(Directory.GetCurrentDirectory(), DuoDeathboardFileName);
+            if (lobby == "duos") {
+                path = DuosFilePath;
             }
-            else
-            {
-                path = Path.Combine(Directory.GetCurrentDirectory(), SquadDeathboardFileName);
+            else {
+                path = SquadsFilePath;
             }
 
-            if (lineToEdit != 0)
-            {
+            if (lineToEdit != 0) {
                 //Overwrite existing file
-                string[] lines = File.ReadAllLines(path);
+                var lines = File.ReadAllLines(path);
+                var currentDeathCount = Int32.Parse(lines[lineToEdit - 1]) + death;
+                lines[lineToEdit - 1] = currentDeathCount.ToString();
 
-                lines[lineToEdit - 1] = (Int32.Parse(lines[lineToEdit - 1]) + death).ToString();
                 File.WriteAllLines(path, lines, Encoding.UTF8);
 
+                await ShowDeathboardAsync(lobby);
             }
 
-            return Task.CompletedTask;
         }
 
         /// <summary>
-        /// Displays number of deaths for each person.
-        /// Defaults to squad if nothing entered. Called with !deathboard duos
+        /// Resets the boards
         /// </summary>
-        [Command("deathboard")]
-        public async Task ShowDeathboardAsync(string lobby = "squad")
-        {
-            var path = string.Empty;
-
+        /// <param name="lobby">Lobby.</param>
+        [Command("reset-board"), RequireOwner]
+        public async Task ResetAsync(string lobby = "") {
             switch(lobby) {
-                case "duos": 
-                    path = Path.Combine(Directory.GetCurrentDirectory(), DuoDeathboardFileName);
-                    lobby = "Duos"; //For the title in the embed message
+                case "all":
+                    await ResetFileAsync(DuosFilePath);
+                    await ShowDeathboardAsync("duos");
+                    await ResetFileAsync(SquadsFilePath);
+                    await ShowDeathboardAsync("squads");
                     break;
-                case "squad":
-                    path = Path.Combine(Directory.GetCurrentDirectory(), SquadDeathboardFileName);
-                    lobby = "Squad"; //For the title in the embed message
+                case "squads":
+                    await ResetFileAsync(SquadsFilePath);
+                    await ShowDeathboardAsync("squads");
                     break;
-                default: 
-                    await ReplyAsync("```Uknown lobby. Use: 'duos', 'squad', or leave blank```");
-                    return;
+                case "duos":
+                    await ResetFileAsync(DuosFilePath);
+                    await ShowDeathboardAsync("duos");
+                    break;
+                default:
+                    await ReplyAsync("```Please specify which boards you would like to reset: duos, squads, all```");
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Validates the type of the lobby.
+        /// </summary>
+        /// <returns>Lobby validation</returns>
+        /// <param name="lobby">Lobby.</param>
+        public async Task<bool> ValidateLobbyType(string lobby) {
+            if (lobby == "squads" || lobby == "duos") {
+                return true;
             }
 
-            EmbedBuilder builder = new EmbedBuilder();
+            await ReplyAsync("```Uknown lobby. Use: 'duos', 'squads', or leave blank```");
 
-            builder.WithTitle(lobby + " Deathboard")
-                .AddInlineField("Alex", File.ReadLines(path).Skip(0).Take(1).First()) //Alex is 1st line
-                .AddInlineField("Trevor", File.ReadLines(path).Skip(1).Take(1).First()) //Trevor is 2nd line
-                .AddInlineField("Reis", File.ReadLines(path).Skip(2).Take(1).First())   //Reis is 3rd line
-                .WithCurrentTimestamp();
+            return false;
+        }
 
-            await ReplyAsync("", false, builder.Build());
+        /// <summary>
+        /// Resets the file for deathboards.
+        /// </summary>
+        /// <returns>Task completion</returns>
+        /// <param name="path">Path.</param>
+        public Task ResetFileAsync(string path) {
+            var lines = File.ReadAllLines(path);
+
+            for (int i = 0; i < lines.Count(); i++) {
+                lines[i] = "0";
+            }
+
+            File.WriteAllLines(path, lines, Encoding.UTF8);
+
+            return Task.CompletedTask;
         }
     }
 }

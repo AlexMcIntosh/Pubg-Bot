@@ -10,7 +10,6 @@ C:/Users/ajmcint2/source/repos/PUBG-Bot/Bot/bin/Debug/netcoreapp2.0/Bot.pdb
 C:/Users/ajmcint2/source/repos/PUBG-Bot/Bot/obj/Debug/netcoreapp2.0/Bot.dll
 C:/Users/ajmcint2/source/repos/PUBG-Bot/Bot/obj/Debug/netcoreapp2.0/Bot.pdb
 C:/Users/ajmcint2/source/repos/PUBG-Bot/Bot/bin/Debug/netcoreapp2.0/Deathboard.txt
-/Users/alexmcintosh/Documents/Pubg-Bot/Bot/bin/Debug/netcoreapp2.0/SquadDeathboard.txt
 /Users/alexmcintosh/Documents/Pubg-Bot/Bot/bin/Debug/netcoreapp2.0/DuosDeathboard.txt
 /Users/alexmcintosh/Documents/Pubg-Bot/Bot/bin/Debug/netcoreapp2.0/Bot.deps.json
 /Users/alexmcintosh/Documents/Pubg-Bot/Bot/bin/Debug/netcoreapp2.0/Bot.runtimeconfig.json
@@ -23,3 +22,4 @@ C:/Users/ajmcint2/source/repos/PUBG-Bot/Bot/bin/Debug/netcoreapp2.0/Deathboard.t
 /Users/alexmcintosh/Documents/Pubg-Bot/Bot/obj/Debug/netcoreapp2.0/Bot.AssemblyInfo.cs
 /Users/alexmcintosh/Documents/Pubg-Bot/Bot/obj/Debug/netcoreapp2.0/Bot.dll
 /Users/alexmcintosh/Documents/Pubg-Bot/Bot/obj/Debug/netcoreapp2.0/Bot.pdb
+/Users/alexmcintosh/Documents/Pubg-Bot/Bot/bin/Debug/netcoreapp2.0/SquadsDeathboard.txt
