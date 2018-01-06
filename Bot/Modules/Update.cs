@@ -32,7 +32,7 @@
 
             var builder = new EmbedBuilder();
             builder.WithTitle("No Chicken For You")
-                   .WithDescription($"{user.Username.ToUpper()} died first in **" + lobby.ToUpper() + "** this round.")
+                   .WithDescription($"**{user.Username.ToUpper()} died first in **" + lobby.ToUpper() + "** this round.")
                    .WithColor(Color.Red);
             
             await ReplyAsync("", false, builder.Build());

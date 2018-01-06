@@ -1,10 +1,8 @@
 ﻿<Properties StartupConfiguration="{1E1667C8-D492-4CFC-A337-257961521C1E}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Bot/SquadsDeathboard.txt">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Bot/Modules/Update.cs">
     <Files>
-      <File FileName="Bot/Modules/Update.cs" Line="162" Column="56" />
-      <File FileName="Bot/Modules/Help.cs" Line="29" Column="2" />
-      <File FileName="Bot/DuosDeathboard.txt" Line="3" Column="2" />
-      <File FileName="Bot/SquadsDeathboard.txt" Line="4" Column="1" />
+      <File FileName="Bot/Modules/Update.cs" Line="40" Column="10" />
+      <File FileName="Bot/Modules/Ping.cs" Line="17" Column="38" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
