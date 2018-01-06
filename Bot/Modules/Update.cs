@@ -8,6 +8,7 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.DependencyInjection;
 
     public class Update : ModuleBase<SocketCommandContext>
     {
@@ -183,6 +184,15 @@
             File.WriteAllLines(path, lines, Encoding.UTF8);
 
             return Task.CompletedTask;
+        }
+
+        [Command("fuck-up")]
+        public async Task DestroyTrevorAsync(SocketUser user, int loop) {
+            
+            while(loop > 0) {
+                await user.SendMessageAsync("get fucked");
+                loop--;
+            }
         }
     }
 }
