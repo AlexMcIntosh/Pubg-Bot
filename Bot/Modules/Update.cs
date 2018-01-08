@@ -33,7 +33,7 @@
 
             var builder = new EmbedBuilder();
             builder.WithTitle("No Chicken For You")
-                   .WithDescription($"**{user.Username.ToUpper()} died first in **" + lobby.ToUpper() + "** this round.")
+                   .WithDescription($"**{user.Username.ToUpper()}** died first in **" + lobby.ToUpper() + "** this round.")
                    .WithColor(Color.Red);
             
             await ReplyAsync("", false, builder.Build());
@@ -53,7 +53,7 @@
             if (!isValidLobby) { return; }
 
             var builder = new EmbedBuilder();
-            builder.WithDescription($"**{user.Username.ToUpper()}** had a death removed from " + lobby.ToUpper())
+            builder.WithDescription($"**{user.Username.ToUpper()}** had a death removed from **" + lobby.ToUpper() + "**")
                    .WithColor(Color.Blue);
             
             await ReplyAsync("", false, builder.Build());
@@ -186,7 +186,10 @@
             return Task.CompletedTask;
         }
 
-        [Command("fuck-up")]
+        /// <summary>
+        /// To be used when someone abuses the bot
+        /// </summary>
+        [Command("fuck-up"), RequireOwner]
         public async Task DestroyTrevorAsync(SocketUser user, int loop) {
             
             while(loop > 0) {

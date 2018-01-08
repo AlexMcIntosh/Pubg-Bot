@@ -1,8 +1,7 @@
 ﻿<Properties StartupConfiguration="{1E1667C8-D492-4CFC-A337-257961521C1E}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Bot/Program.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Bot/Modules/Update.cs">
     <Files>
-      <File FileName="Bot/Modules/Update.cs" Line="191" Column="36" />
-      <File FileName="Bot/Program.cs" Line="24" Column="13" />
+      <File FileName="Bot/Modules/Update.cs" Line="201" Column="2" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
