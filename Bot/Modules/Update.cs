@@ -25,7 +25,7 @@
         /// </summary>
         /// <param name="user">User.</param>
         /// <param name="lobby">Lobby. Must be duos or squads</param>
-        [Command("kill")]
+        [Command("k")]
         public async Task AddDeathAsync(SocketGuildUser user, string lobby = "squads") {
             var isValidLobby = await ValidateLobbyType(lobby);
 
@@ -46,7 +46,7 @@
         /// <param name="user">User.</param>
         /// <param name="deathsToRemove">Deaths to remove.</param>
         /// <param name="lobby">Lobby. Must be duos or squads</param>
-        [Command("remove-death"), RequireOwner]
+        [Command("r"), RequireOwner]
         public async Task RemoveDeathAsync(SocketGuildUser user, int deathsToRemove = 1, string lobby = "squads") {
             var isValidLobby = await ValidateLobbyType(lobby);
 
@@ -64,7 +64,7 @@
         /// Displays current death count for players in lobby
         /// </summary>
         /// <param name="lobby">Lobby type. Must be duos or squads</param>
-        [Command("deathboard")]
+        [Command("board")]
         public async Task ShowDeathboardAsync(string lobby = "squads") {
             var path = string.Empty;
 
@@ -131,8 +131,8 @@
         /// Resets the boards
         /// </summary>
         /// <param name="lobby">Lobby.</param>
-        [Command("reset-board"), RequireOwner]
-        public async Task ResetAsync(string lobby = "") {
+        [Command("-wipe"), RequireOwner]
+        public async Task WipeBoardAsync(string lobby = "") {
             switch(lobby) {
                 case "all":
                     await ResetFileAsync(DuosFilePath);
@@ -190,11 +190,11 @@
         /// To be used when someone abuses the bot
         /// </summary>
         [Command("fuck-up"), RequireOwner]
-        public async Task DestroyTrevorAsync(SocketUser user, int loop) {
+        public async Task DestroyTrevorAsync(SocketUser user, int numberOfMessages) {
             
-            while(loop > 0) {
-                await user.SendMessageAsync("get fucked");
-                loop--;
+            while(numberOfMessages > 0) {
+                await user.SendMessageAsync("get rekt");
+                numberOfMessages--;
             }
         }
     }

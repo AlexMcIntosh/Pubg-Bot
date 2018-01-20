@@ -1,10 +1,8 @@
 ﻿namespace Bot
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
+    using System.IO;
     using Discord;
     using Discord.WebSocket;
     using Discord.Commands;
@@ -27,8 +25,9 @@
                 .AddSingleton(_client)
                 .AddSingleton(_commands)
                 .BuildServiceProvider();
-
-            string botToken = "Mzk2ODc5OTc0NDc0MTg2NzUy.DSoImw.4gnrhAz77qTlB-QbM_aGIGUMMdM";
+             
+            string tokenPath = Path.Combine(Directory.GetCurrentDirectory(), "Key.txt");
+            string botToken = File.ReadAllText(tokenPath);
 
             //Event subscription
             _client.Log += Log;
@@ -65,7 +64,7 @@
 
             int argPos = 0;
 
-            if (message.HasStringPrefix("!", ref argPos))
+            if (message.HasStringPrefix("-", ref argPos))
             {
                 var context = new SocketCommandContext(_client, message);
 
