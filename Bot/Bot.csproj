@@ -9,6 +9,7 @@
     <None Remove="Deathboard.txt" />
     <None Remove="DuosDeathboard.txt" />
     <None Remove="SquadDeathboard.txt" />
+    <None Remove="Key.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,6 +18,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DuosDeathboard.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Key.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
 
