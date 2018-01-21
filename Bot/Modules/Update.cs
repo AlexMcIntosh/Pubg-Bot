@@ -16,8 +16,8 @@
         readonly int TrevorPosition = 2;
         readonly int ReisPosition = 3;
 
-        readonly string SquadsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "SquadsDeathboard.txt");
-        readonly string DuosFilePath = Path.Combine(Directory.GetCurrentDirectory(), "DuosDeathboard.txt");
+        readonly string SquadsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Boards\\SquadsDeathboard.txt");
+        readonly string DuosFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Boards\\DuosDeathboard.txt");
 
 
         /// <summary>
